@@ -42,7 +42,15 @@ function addUser(data, res){
     })
     .then(function(emailAmo){
         arr.push(emailAmo);
-        setTimeout(() => console.log(arr), 1000);
+        if(arr.includes(1)){
+            console.log(arr);
+            console.log('A user with the same email or/and phone number exists.');
+        }
+        else
+        {
+            console.log(arr);
+            console.log('Creating user... Please wait...');
+        }
     })
 }
 
