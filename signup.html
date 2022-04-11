@@ -1,0 +1,57 @@
+<!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+<input type="text" id="firstname" required>
+<button onclick="sendData()">Create User</button>
+
+<script>
+    function sendData(){
+        $firstname = $('#firstname').val();
+        $.ajax({
+            data: {firstname : $firstname, lastname: 'hello'},
+            type: "POST",
+            dataType: "json",
+        });
+    }
+</script> -->
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+<form>
+    <label for="fname">First name (Should not be longer than 15 characters)</label><br>
+    <input type="text" id="firstname" required><br>
+    <label for="lname">Last name (Should not be longer than 15 characters)</label><br>
+    <input type="text" id="lastname" required><br>
+    <label for="tel">Phone number</label><br>
+    <input type="text" id="phonenum" required><br>
+    <label for="mailadd">Email</label><br>
+    <input type="email" id="email" required><br>
+    <label for="pwd">Password</label><br>
+    <input type="password" id="password" required><br>
+    <label for="cpwd">Confirm password</label><br>
+    <input type="password" id="cpassword" required><br>
+    <button type="button" onclick="sendData()">Create User
+</form>
+
+<script>
+    function sendData(){
+        $firstname = $('#firstname').val();
+        $lastname = $('#lastname').val();
+        $phonenum = $('#phonenum').val();
+        $email = $('#email').val();
+        $password = $('#password').val();
+        $cpassword = $('#cpassword').val();
+
+        if($('#firstname').val() == '' || $('#lastname').val() == '' || $('#phonenum').val() == '' || $('#email').val() == '' || $('#password').val() == '' || $('#cpassword').val() == '')
+            alert('Please fill out all fields');
+        else
+        if($('#password').val() != $('#cpassword').val())
+            alert('Passwords doesnt match');
+        else
+            $.ajax({
+                data: {firstname : $firstname, lastname : $lastname, phonenumber : $phonenum, email : $email, password : $password},
+                type: "POST",
+                dataType: "json"
+            });
+            location.href = "/signup_status";
+    }
+</script>
