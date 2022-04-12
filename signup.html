@@ -41,7 +41,7 @@
         $password = $('#password').val();
         $cpassword = $('#cpassword').val();
 
-        if($('#firstname').val() == '' || $('#lastname').val() == '' || $('#phonenum').val() == '' || $('#email').val() == '' || $('#password').val() == '' || $('#cpassword').val() == '')
+        if($('#firstname').val() == '' && $('#lastname').val() == '' && $('#phonenum').val() == '' && $('#email').val() == '' && $('#password').val() == '' && $('#cpassword').val() == '')
             alert('Please fill out all fields');
         else
         if($('#password').val() != $('#cpassword').val())
