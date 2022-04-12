@@ -1,19 +1,38 @@
 const http = require('http');
 var fs = require('fs');
-var mysql = require('mysql');
+const { Pool } = require('pg');
 
-var con = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "Password",
-    database: "users"
-  });
+const con = new Pool({
+    user: 'admin',
+    database: 'tesdb',
+    password: 'password',
+    port: 5432,
+    host: 'localhost',
+})
 
 function connectToDb(){
     con.connect(function(err) {
     if (err) throw err;
-        console.log('Connected to the "users" database!');
+        console.log('Connected to the "tesdb" database!');
     });
+}
+
+function dbFunc(sql, res){
+    con.query(sql, function (err, result) {
+      if (err) throw err;
+      console.log("Success: " + sql);
+      res.write('<label>A user has been created!</label><br>');
+      var filename = 'homebutton.html';
+        fs.readFile(filename, function(err, htmlcontent) {
+            res.write(htmlcontent);
+            return res.end();
+        });
+    });
+  }
+
+function sqlCommandGen(data){
+    var sql = `INSERT INTO userstable (firstname, lastname, phonenum, email, password) VALUES ('${data[0]}', '${data[1]}', '${data[2]}', '${data[3]}', '${data[4]}')`;
+    return sql;
 }
 
 function addUser(data, res){
@@ -22,9 +41,9 @@ function addUser(data, res){
     const promise = new Promise(function(resolve, reject){
 
         //get amount of users with same phonenum
-        con.query(`SELECT * FROM users WHERE phonenum = '${data[2]}'`, function (err, result) {
+        con.query(`SELECT * FROM userstable WHERE phonenum = '${data[2]}'`, function (err, result) {
             if (err) throw err;
-            resolve(result.length);
+            resolve(result.rows.length);
         });
     });
 
@@ -34,9 +53,9 @@ function addUser(data, res){
 
         //Return another promise
         return new Promise(function(resolve, reject){
-            con.query(`SELECT * FROM users WHERE email = '${data[3]}'`, function (err, result) {
+            con.query(`SELECT * FROM userstable WHERE email = '${data[3]}'`, function (err, result) {
                 if (err) throw err;
-                resolve(result.length);
+                resolve(result.rows.length);
             });
         });
     })
@@ -45,11 +64,21 @@ function addUser(data, res){
         if(arr.includes(1)){
             console.log(arr);
             console.log('A user with the same email or/and phone number exists.');
+            res.write('<label>A user with the same email or/and phone number already exists. Could not create user.</label><br>');
+
+            var filename = 'homebutton.html';
+            fs.readFile(filename, function(err, htmlcontent) {
+                res.write(htmlcontent);
+                return res.end();
+            });
         }
         else
         {
             console.log(arr);
             console.log('Creating user... Please wait...');
+            res.write('<label>Creating user... Please wait... </label><br>');
+            //console.log(sqlCommandGen(data));
+            dbFunc(sqlCommandGen(data), res);
         }
     })
 }
@@ -93,7 +122,6 @@ http.createServer(function (req, res) {
 
         //Get post request
         req.on('data', chunk => {
-            //console.log('test10');
             data = decodeAndSplit(chunk);
         })
     }
@@ -102,9 +130,31 @@ http.createServer(function (req, res) {
 
         //Load signup_success.html
         var filename = 'signup_status.html';
-        writeHtmlContent(filename, res);
+        fs.readFile(filename, function(err, htmlcontent) {
+            res.writeHead(200, {'Content-Type': 'text/html'});
+            res.write(htmlcontent);
+        });
 
         //Add user
         addUser(data, res);
+    }
+    else
+    if(req.url === '/login'){
+
+        //Load signup.html
+        var filename = 'login.html';
+        writeHtmlContent(filename, res);
+
+        //Get post request
+        req.on('data', chunk => {
+            data = decodeAndSplit(chunk);
+            console.log(data);
+        })
+
+    }
+    else
+    if(req.url === '/verifying_login'){
+        res.writeHead(200, {'Content-Type': 'text/html'});
+        res.write('Verifying login details.');
     }
 }).listen(5000);

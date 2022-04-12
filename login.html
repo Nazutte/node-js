@@ -1,0 +1,26 @@
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+<form>
+    <label for="mailadd">Email:</label><br>
+    <input type="email" id="email" required><br>
+    <label for="pwd">Password:</label><br>
+    <input type="password" id="password" required><br>
+    <button type="button" onclick="sendData()">Login
+</form>
+
+<script>
+    function sendData(){
+        $email = $('#email').val();
+        $password = $('#password').val();
+
+        if($('#email').val() == '' || $('#password').val() == '')
+            alert('Enter email and password to login');
+        else
+            $.ajax({
+                data: {email : $email, password : $password},
+                type: "POST",
+                dataType: "json"
+            });
+            location.href = "/verifying_login";
+    }
+</script>
